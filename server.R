@@ -1,3 +1,4 @@
+# git push -u origin master
 server <- function(input, output, session){
   session$onSessionEnded(stopApp)
   
@@ -25,6 +26,25 @@ server <- function(input, output, session){
                          sheet = "List of Trades", skip = 1, 
                          col_types = c(rep("numeric", 2), rep("text",2), 
                                        rep("guess",2), rep("numeric",10)))
+    trades <- format_file(trades)
+    return(trades)
+  })
+  
+  oos_trades <- reactive({
+    if (is.null(input$oos_file)) {
+      return(NULL)
+    }
+    file <- input$oos_file
+    trades <- read_excel(file$datapath, 
+                         sheet = "List of Trades", skip = 1, 
+                         col_types = c(rep("numeric", 2), rep("text",2), 
+                                       rep("guess",2), rep("numeric",10)))
+    trades <- format_file(trades)
+    return(trades)
+  })
+  
+  format_file <- function(file){
+    trades <- file
     trades$Time <- strftime(trades$Time, format = "%H:%M")
     trades$Date <- format(as.Date(trades$Date, '%Y-%m-%d'), "%m/%d/%Y")
     trades$Datetime <- strptime(paste(trades$Date, trades$Time), "%m/%d/%Y %H:%M", tz = "GMT")
@@ -39,7 +59,7 @@ server <- function(input, output, session){
     trades$Trade <- na.locf(as.numeric(trades$Trade))
     trades[is.na(trades)] <- 0
     return(trades)
-  })
+  }
   
   entries <- function(data){
     entries <- data[seq(1,nrow(data),2),]
@@ -111,5 +131,61 @@ server <- function(input, output, session){
     req(input$is_file)
     is_trades <- is_trades()
     plot(is_trades$Drawdown_pct, main = "Drawdown")
+  })
+  
+  ### OOS ######################################################################
+  output$oos_table <- renderDataTable({
+    req(input$oos_file)
+    oos_trades <- oos_trades()
+    table.Stats(oos_trades$Profit_pct)
+  })
+  
+  output$oos_monthly <- renderDataTable({
+    req(input$oos_file)
+    oos_entries <- entries(oos_trades())
+    t(table.CalendarReturns(oos_entries$Profit_pct))
+  })
+  
+  output$oos_ratios <- renderText({
+    req(input$oos_file)
+    entries <- entries(oos_trades())
+    
+    print()
+  })
+  
+  output$oos_perf_summary <- renderPlot({
+    req(input$oos_file)
+    oos_entries <- entries(oos_trades())
+    charts.PerformanceSummary(R = oos_entries$Profit_pct, Rf = 0, main = "In Sample")
+  })
+  
+  output$oos_hist <- renderPlot({
+    req(input$oos_file)
+    hist(entries(oos_trades()$Profit), breaks = 20, main = "Hoostogram of Returns",
+         xlab = "Profit")
+  })
+  
+  output$oos_cum_profit <- renderPlot({
+    req(input$oos_file)
+    oos_trades <- oos_trades()
+    plot(cumsum(oos_trades$Profit), main = "Cumulative Returns")
+  })
+  
+  output$oos_cum_profit_pct <- renderPlot({
+    req(input$oos_file)
+    oos_trades <- oos_trades()
+    plot(cumsum(oos_trades$Profit_pct), main = "Cumulative Returns")
+  })
+  
+  output$oos_drawdown <- renderPlot({
+    req(input$oos_file)
+    oos_trades <- oos_trades()
+    plot(oos_trades$Drawdown, main = "Drawdown")
+  })
+  
+  output$oos_drawdown_pct <- renderPlot({
+    req(input$oos_file)
+    oos_trades <- oos_trades()
+    plot(oos_trades$Drawdown_pct, main = "Drawdown")
   })
 }
