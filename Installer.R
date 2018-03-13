@@ -24,7 +24,8 @@ pacman::p_load("quantmod",
                "SMFI5",
                "ggplot2",
                "forecast",
-               "tseries")
+               "tseries",
+               "readxl")
 
 ### Loading the installed Packages #############################################
 library(pacman)
@@ -52,6 +53,7 @@ library(SMFI5)
 library(ggplot2)
 library(forecast)
 library(tseries)
+library(readxl)
 # library(googleVis)
 # library(quadprog)
 # library(xtable)
@@ -64,3 +66,10 @@ library(tseries)
 # library(fImport)
 # library(corpcor)
 # library(Rglpk)
+
+### other pages ################################################################
+source("header.R")
+source("sidebar.R")
+source("is.R")
+source("oos.R")
+source("comparison.R")

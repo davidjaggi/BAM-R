@@ -1,23 +1,12 @@
-# git push -u origin master
-source('Installer.R')
+source("Installer.R")
 
 ui <- dashboardPage(
   # Start DashBoard Header
-  dashboardHeader(title = 'BAM'), # end header
+  header, # end header
   # start sidebar
-  dashboardSidebar(
-    sidebarMenu(
-      menuItem('Timeseries', tabName = 'timeSeries'),
-      menuItem('Tests', tabName = 'tests'),
-      menuItem('Forecast', tabName = 'forecast')
-    ) # end menu
-  ), # end sidebar
+  sidebar, # end sidebar
   # start body
   dashboardBody(
-    tabItems(
-      tabItem('data'),
-      tabItem('tests'),
-      tabItem('forecast')
-    ) # end tabitems
+    tabItems(is, oos, comparison) # end tabitems
   ) # end body
 ) # end ui
