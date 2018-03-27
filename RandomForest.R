@@ -8,6 +8,8 @@
 # install.packages("klaR")
 # install.packages("MASS")
 # install.packages("randomForest")
+# install.packages("randomForestExplainer")
+
 
 library(quantmod)
 library(TTR)
@@ -23,8 +25,11 @@ library(MASS)
 library(randomForest)
 library(kernlab)
 library(rpart)
+library(randomForestExplainer)
+
 
 ##use set.seed function to ensure the results are repeatable
+
 set.seed(5)
 
 ##Read the stock and index data
@@ -86,7 +91,8 @@ importance(fit_rf)
 varImpPlot(fit_rf)
 getTree(fit_rf)
 
-
+# Plot the randomForest error
+plot(fit_rf)
 
 
 # Resampling method used - 10fold cross validatation
