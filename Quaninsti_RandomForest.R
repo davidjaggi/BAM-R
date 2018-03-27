@@ -1,3 +1,5 @@
+# https://www.quantinsti.com/blog/predictive-modeling-algorithmic-trading/
+
 #install.packages("caret")
 #install.packages("corrplot")
 #install.packages("pROC")
