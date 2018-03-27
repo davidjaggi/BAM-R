@@ -39,9 +39,9 @@ class = ifelse(price > 0, "UP","DOWN")
 forceindex = (df_stock$Close - df_stock$Open)*df_stock$Vol ; forceindex = c(NA,head(forceindex,-1)) ;
 
 #Buy & Sell signal indicators (williams r% and RSI)
-willR5 = wpr(df_stock[,c("High","Low","Close")], n=5) ; willR5 = c(NA,head(willR5,-1));
-willR10 = wpr(df_stock[,c("High","Low","Close")], n=10) ; willR5 = c(NA,head(willR10,-1));
-willR15 = wpr(df_stock[,c("High","Low","Close")], n=15) ; willR5 = c(NA,head(willR15,-1));
+willR5 = WPR(df_stock[,c("High","Low","Close")], n=5) ; willR5 = c(NA,head(willR5,-1));
+willR10 = WPR(df_stock[,c("High","Low","Close")], n=10) ; willR5 = c(NA,head(willR10,-1));
+willR15 = WPR(df_stock[,c("High","Low","Close")], n=15) ; willR5 = c(NA,head(willR15,-1));
 
 RSI5 = RSI(df_stock$Close, n = 5, matype="WMA"); RSI5 = c(NA,head(RSI5,-1));
 RSI10 = RSI(df_stock$Close, n = 10, matype="WMA"); RSI10 = c(NA,head(RSI10,-1));
@@ -50,15 +50,15 @@ RSI15 = RSI(df_stock$Close, n = 15, matype="WMA"); RSI15 = c(NA,head(RSI15,-1));
 #Price xhange indicators
 ROC5 = ROC(df_stock$Close, n = 5, type = "discrete")*100 ; ROC5 = c(NA,head(ROC5,-1)) ;
 ROC10 = ROC(df_stock$Close, n = 10, type = "discrete")*100 ; ROC10 = c(NA,head(ROC10, -1)) ;
-s
-MOM5 = MOM(df_stock$Close, n = 5, na.pad = TRUE) ; MOM5 = c(NA,head(MOM5, -1)) ;
-MOM10 = MOM(df_stock$Close, n = 10, na.pad = TRUE) ; MOM10 = c(NA,head(MOM10, -1)) ;
+
+MOM5 = momentum(df_stock$Close, n = 5, na.pad = TRUE) ; MOM5 = c(NA,head(MOM5, -1)) ;
+MOM10 = momentum(df_stock$Close, n = 10, na.pad = TRUE) ; MOM10 = c(NA,head(MOM10, -1)) ;
 
 #MomIndexes to be inserted
 
 #ATR
-ATR5 = ATR(df_stock[,c("High","Low","Close")], n=5, matype="WMA") ; ATR5 = c(NA,head(ATR5,-1)) ;
-ATR10 = ATR(df_stock[,c("High","Low","Close")], n=10, matype="WMA") ; ATR10 = c(NA,head(ATR10,-1)) ;
+ATR5 = ATR(df_stock[,c("High","Low","Close")], n=5, matype="WMA")[,1] ; ATR5 = c(NA,head(ATR5,-1)) ;
+ATR10 = ATR(df_stock[,c("High","Low","Close")], n=10, matype="WMA")[,1] ; ATR10 = c(NA,head(ATR10,-1)) ;
 
 #ATRIndexes to be inserted
 
@@ -70,10 +70,11 @@ dataset = na.omit(dataset)
 print(head(dataset),5)
 dim(dataset)
 y = dataset$class
-cbind(freq-table(y), percentage-prop.table(table(y))*100)
+cbind(freq=table(y), percentage=prop.table(table(y))*100)
 
 summary(dataset)
 
 ##visualising the dataset using a correlation matrix
-correlations - cor(dataset[,c(2:18)])
+correlations = cor(dataset[,c(2:14)])
 print(head(correlations))
+corrplot(correlations, method="number")
