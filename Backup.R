@@ -59,3 +59,21 @@ MOM10 = MOM(df_stock$Close, n = 10, na.pad = TRUE) ; MOM10 = c(NA,head(MOM10, -1
 #ATR
 ATR5 = ATR(df_stock[,c("High","Low","Close")], n=5, matype="WMA") ; ATR5 = c(NA,head(ATR5,-1)) ;
 ATR10 = ATR(df_stock[,c("High","Low","Close")], n=10, matype="WMA") ; ATR10 = c(NA,head(ATR10,-1)) ;
+
+#ATRIndexes to be inserted
+
+##Combining all indicators and classes into one dataframe
+dataset = data.frame(class,forceindex,willR5,willR10,willR15,RSI5,RSI10,RSI15,ROC5,ROC10,MOM5,MOM10,ATR5,ATR10)
+dataset = na.omit(dataset)
+
+##understanding the dataset using descriptive statistics
+print(head(dataset),5)
+dim(dataset)
+y = dataset$class
+cbind(freq-table(y), percentage-prop.table(table(y))*100)
+
+summary(dataset)
+
+##visualising the dataset using a correlation matrix
+correlations - cor(dataset[,c(2:18)])
+print(head(correlations))
