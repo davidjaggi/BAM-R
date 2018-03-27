@@ -79,16 +79,16 @@ correlations = cor(dataset[,c(2:14)])
 print(head(correlations))
 corrplot(correlations, method="number")
 
-##selecting features using the random forest importance function from the FSelector package
-weights = random.forest.importance(importance.type = 1, data = dataset, formula = class~. )
-print(weights)
-
 ##using randomForest
 fit_rf = randomForest(as.factor(class)~., data = dataset)
 importance(fit_rf)
 
 varImpPlot(fit_rf)
 getTree(fit_rf)
+
+
+
+
 # Resampling method used - 10fold cross validatation
 # with accuracy as the model evaluation metric
 trainControl = trainControl (method="cv", number=10)
