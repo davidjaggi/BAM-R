@@ -9,6 +9,7 @@
 # install.packages("MASS")
 # install.packages("randomForest")
 # install.packages("randomForestExplainer")
+# install.packages("mlbench")
 
 
 library(quantmod)
@@ -26,6 +27,7 @@ library(randomForest)
 library(kernlab)
 library(rpart)
 library(randomForestExplainer)
+library(mlbench)
 
 
 ##use set.seed function to ensure the results are repeatable
@@ -44,11 +46,12 @@ class = ifelse(price > 0, "UP","DOWN")
 forceindex = (data$Close - data$Open)*data$Vol ; forceindex = c(NA,head(forceindex,-1)) ;
 
 #Buy & Sell signal indicators (williams r% and RSI)
+willR2 = WPR(data[,c("High","Low","Close")], n=2) ; willR2 = c(NA,head(willR2,-1));
 willR5 = WPR(data[,c("High","Low","Close")], n=5) ; willR5 = c(NA,head(willR5,-1));
 willR10 = WPR(data[,c("High","Low","Close")], n=10) ; willR5 = c(NA,head(willR10,-1));
 willR15 = WPR(data[,c("High","Low","Close")], n=15) ; willR5 = c(NA,head(willR15,-1));
 
-RSI2 = RSI(data$Close, n = 2, matype = "WMA"); RSI2 = c(NA, head(RSI2m-1));
+RSI2 = RSI(data$Close, n = 2, matype ="WMA"); RSI2 = c(NA, head(RSI2,-1));
 RSI5 = RSI(data$Close, n = 5, matype="WMA"); RSI5 = c(NA,head(RSI5,-1));
 RSI10 = RSI(data$Close, n = 10, matype="WMA"); RSI10 = c(NA,head(RSI10,-1));
 RSI15 = RSI(data$Close, n = 15, matype="WMA"); RSI15 = c(NA,head(RSI15,-1)); 
@@ -79,8 +82,10 @@ CL = data$Close - data$Low; CL = c(NA, head(CL, -1));
 Aroon = aroon(data$High, n = 5); AroonH = c(NA, head(Aroon[,3],-1));
 Aroon = aroon(data$Low, n = 5); AroonD = c(NA, head(Aroon[,3], -1));
 
+# Weekdays as integer
+Wday = 
 ##Combining all indicators and classes into one dataframe
-dataset = data.frame(class,forceindex,willR5,willR10,willR15,RSI2,RSI5,RSI10,RSI15,ROC5,ROC10,MOM5,MOM10,ATR2,ATR5,ATR10,HC,CL,AroonH, AroonD)
+dataset = data.frame(class,forceindex,willR2,willR5,willR10,willR15,RSI2,RSI5,RSI10,RSI15,ROC5,ROC10,MOM5,MOM10,ATR2,ATR5,ATR10,HC,CL,AroonH, AroonD)
 dataset = na.omit(dataset)
 
 ##understanding the dataset using descriptive statistics
@@ -96,19 +101,18 @@ correlations = cor(dataset[,c(2:ncol(dataset))])
 print(head(correlations))
 corrplot(correlations, method="number")
 
-##using randomForest
-fit_rf = randomForest(as.factor(class)~., data = dataset)
-
-importance(fit_rf)
-
-varImpPlot(fit_rf)
-getTree(fit_rf)
-
-# Plot the randomForest error
-plot(fit_rf)
+# Have a look at the pairs
+pairs(dataset[1:500,])
 
 
-# Resampling method used - 10fold cross validatation
-# with accuracy as the model evaluation metric
-trainControl = trainControl (method="cv", number=10)
-metric = "Accuracy"
+# 75% of the sample size
+# Create a train and test Dataset
+
+
+smp_size <- floor(0.75 * nrow(dataset))
+  
+## set the seed to make your partition reproductible
+train_ind <- sample(seq_len(nrow(dataset)), size = smp_size)
+train <- dataset[train_ind, ]
+test <- dataset[-train_ind, ]
+
