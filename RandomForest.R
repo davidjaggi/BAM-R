@@ -48,6 +48,7 @@ willR5 = WPR(data[,c("High","Low","Close")], n=5) ; willR5 = c(NA,head(willR5,-1
 willR10 = WPR(data[,c("High","Low","Close")], n=10) ; willR5 = c(NA,head(willR10,-1));
 willR15 = WPR(data[,c("High","Low","Close")], n=15) ; willR5 = c(NA,head(willR15,-1));
 
+RSI2 = RSI(data$Close, n = 2, matype = "WMA"); RSI2 = c(NA, head(RSI2m-1));
 RSI5 = RSI(data$Close, n = 5, matype="WMA"); RSI5 = c(NA,head(RSI5,-1));
 RSI10 = RSI(data$Close, n = 10, matype="WMA"); RSI10 = c(NA,head(RSI10,-1));
 RSI15 = RSI(data$Close, n = 15, matype="WMA"); RSI15 = c(NA,head(RSI15,-1)); 
@@ -62,6 +63,7 @@ MOM10 = momentum(data$Close, n = 10, na.pad = TRUE) ; MOM10 = c(NA,head(MOM10, -
 #MomIndexes to be inserted
 
 #ATR
+ATR2 = ATR(data[,c("High","Low","Close")], n=2, matype="WMA")[,1] ; ATR2 = c(NA,head(ATR2,-1)) ;
 ATR5 = ATR(data[,c("High","Low","Close")], n=5, matype="WMA")[,1] ; ATR5 = c(NA,head(ATR5,-1)) ;
 ATR10 = ATR(data[,c("High","Low","Close")], n=10, matype="WMA")[,1] ; ATR10 = c(NA,head(ATR10,-1)) ;
 
@@ -73,8 +75,12 @@ HC = data$High - data$Close; HC = c(NA, head(HC,-1));
 # Difference between Low and Close
 CL = data$Close - data$Low; CL = c(NA, head(CL, -1));
 
+# Add Aroon indicator
+Aroon = aroon(data$High, n = 5); AroonH = c(NA, head(Aroon[,3],-1));
+Aroon = aroon(data$Low, n = 5); AroonD = c(NA, head(Aroon[,3], -1));
+
 ##Combining all indicators and classes into one dataframe
-dataset = data.frame(class,forceindex,willR5,willR10,willR15,RSI5,RSI10,RSI15,ROC5,ROC10,MOM5,MOM10,ATR5,ATR10,HC,CL)
+dataset = data.frame(class,forceindex,willR5,willR10,willR15,RSI2,RSI5,RSI10,RSI15,ROC5,ROC10,MOM5,MOM10,ATR2,ATR5,ATR10,HC,CL,AroonH, AroonD)
 dataset = na.omit(dataset)
 
 ##understanding the dataset using descriptive statistics
@@ -86,7 +92,7 @@ cbind(freq=table(y), percentage=prop.table(table(y))*100)
 summary(dataset)
 
 ##visualising the dataset using a correlation matrix
-correlations = cor(dataset[,c(2:ncol(data))])
+correlations = cor(dataset[,c(2:ncol(dataset))])
 print(head(correlations))
 corrplot(correlations, method="number")
 
