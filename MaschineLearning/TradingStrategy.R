@@ -1,27 +1,28 @@
 library(quantmod)
 
 Strategy <- function(x) {
-  Williams <- WPR(x[,c("High","Low","Close")], n=10)
-  RSI <- RSI(x$Close, n = 5, matype="WMA")
-  RSI5 = RSI(data$Close, n = 5, matype="WMA");
   position <- rep(0,length(x))
-  for(i in 1:length(x)){
-    if (Williams[i] >= 0.2 & Williams[i] >= 0.83) {
-      position[i] <- 1} else {position <- 0}
-    # else if (williams >= 0.2 & williams < 0.83 & RSI >= 48 & williams >= 0.38) {
-    #   position <- -1} 
-    # else if(williams >= 0.2 & williams < 0.83 & RSI >= 38 & williams < 0.38 & RSI >= 60) {
-    #   position <- 1}
-    # else if(williams >= 0.2 & williams < 0.83 & RSI >= 48 & williams < 0.38 & RSI < 60) {
-    #   position <- 1}
-    # else if(williams >= 0.2 & williams < 0.83 & RSI < 48 & williams >= 0.62 & RSI >= 35) {
-    #   position <- 1}
-    # else if(williams >= 0.2 & williams < 0.83 & RSI < 48 & williams >= 0.62 & RSI < 35) {
-    #   position <- 1}
-    # else if(williams >= 0.2 & williams < 0.83 & RSI < 48 & williams < 0.62) {
-    #   position <- 1}
-    # else (williams < 0.2) {
-    #   position <- 1}
+  Williams <- x$Williams
+  RSI <- x$RSI
+  
+  for(i in 1:nrow(x)){
+    
+    if ((Williams[i] >= 0.2) && (Williams[i] >= 0.83)) {
+      position[i] <- 1}
+    else if ((Williams[i] >= 0.2) && (Williams[i] < 0.83) && (RSI[i] >= 48) && (Williams[i] >= 0.38)) {
+      position[i] <- -1} 
+    # else if(Williams[i] >= 0.2 && Williams[i] < 0.83 && RSI[i] >= 38 && Williams[i] < 0.38 && RSI[i] >= 60) {
+    # position[i] <- 1}
+    # else if(Williams[i] >= 0.2 && Williams[i] < 0.83 && RSI[i] >= 48 && Williams[i] < 0.38 && RSI[i] < 60) {
+    # position[i] <- 1}
+    # else if(Williams[i] >= 0.2 && Williams[i] < 0.83 && RSI[i] < 48 && Williams[i] >= 0.62 && RSI[i] >= 35) {
+    # position[i] <- 1}
+    # else if(Williams[i] >= 0.2 && Williams[i] < 0.83 && RSI[i] < 48 && Williams[i] >= 0.62 && RSI[i] < 35) {
+    # position[i] <- 1}
+    # else if(Williams[i] >= 0.2 && Williams[i] < 0.83 && RSI[i] < 48 && Williams[i] < 0.62) {
+    # position[i] <- 1}
+    # else (Williams[i] < 0.2) {
+    # position[i] <- 1}
   }
   return(position)
 }
@@ -31,9 +32,12 @@ Strategy <- function(x) {
 data$Datetime <- strptime(paste(data$Date, data$Time), "%m/%d/%Y %H:%M")
 data <- as.xts(x = data[,3:7], order.by = data$Datetime)
 
-myFX <- data
+data$Williams <- WPR(data[,c("High","Low","Close")], n=10)
+data$RSI <- RSI(data$Close, n = 5, matype="WMA")
 
-myPosition <- Strategy(myFX)
+data <- na.omit(data)
+
+Position <- Strategy(data)
 
 bhReturns <- Delt(myFX$Close, type = "arithmetic")
 myReturns <- bhReturns*Lag(myPosition,1)
