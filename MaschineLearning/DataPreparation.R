@@ -12,7 +12,8 @@
 # install.packages("randomForestExplainer")
 # install.packages("mlbench")
 # install.packages("lubridate")
-# install.packages(xts)
+# install.packages("xts")
+# install.packages("FGN")
 
 ##### Install Libraries ########################################################
 library(quantmod)
@@ -33,29 +34,33 @@ library(randomForestExplainer)
 library(mlbench)
 library(lubridate)
 library(xts)
+library(FGN)
 
-
+source("MaschineLearning/Functions.R")
 
 # use set.seed function to ensure the results are repeatable
 set.seed(5)
 
 ##Read the stock and index data
-data = read.csv("Data/BA_EURUSD_15min.txt")
+# data = read.csv("Data/BA_EURUSD_15min.txt")
+data = read.csv("Data/BA_EURUSD_60min.txt")
 
 data$Datetime <- strptime(paste(data$Date, data$Time), "%m/%d/%Y %H:%M")
 data <- as.xts(x = data[,3:7], order.by = data$Datetime)
 ##compute the price change for the stock ans classify as UP/DOWN
-price = data$Close-data$Open
-class = ifelse(price > 0, "UP","DOWN")
-
+price = as.vector(data$Close-data$Open)
+class = as.vector(ifelse(price > 0, "UP","DOWN"))
+return = Delt(data$Close, k=1)
 ##### Inport all Indicators  ###################################################
 source("MaschineLearning/Indicators.R")
 
 ##### Combining all indicators and classes into one dataframe ##################
-dataset = data.frame(class,forceindex,willR2,willR5,willR10,willR15,RSI2,RSI5,RSI10,RSI15,ROC5,ROC10,MOM5,MOM10,ATR2,ATR5,ATR10,HC,CL,AroonH, AroonD)
+# dataset = data.frame(class,forceindex,willR2,willR5,willR10,willR15,RSI2,RSI5,RSI10,RSI15,ROC5,ROC10,MOM5,MOM10,ATR2,ATR5,ATR10,HC,CL,AroonH, AroonD)
+dataset <- data.frame(class, MOM5, MOM10)
 dataset = na.omit(dataset)
 
 ##understanding the dataset using descriptive statistics
+head(dataset)
 print(head(dataset),5)
 dim(dataset)
 y = dataset$class
@@ -72,14 +77,5 @@ corrplot(correlations, method="number")
 pairs(dataset[1:500,])
 
 ##### Split data into train and test ###########################################
-# 75% of the sample size
-# Create a train and test Dataset
-
-
-smp_size <- floor(0.75 * nrow(dataset))
-  
-## set the seed to make your partition reproductible
-train_ind <- sample(seq_len(nrow(dataset)), size = smp_size)
-train <- dataset[train_ind, ]
-test <- dataset[-train_ind, ]
-
+train <- train_sample(dataset, 0.75)
+test <- test_sample(dataset, 0.75)
