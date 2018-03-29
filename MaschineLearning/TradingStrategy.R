@@ -1,28 +1,28 @@
 library(quantmod)
 
-Strategy <- function(x) {
-  position <- rep(0,length(x))
-  Williams <- x$Williams
-  RSI <- x$RSI
+Strategy <- function(data) {
+  position <- rep(0,nrow(data))
+  Williams <- data$Williams
+  RSI <- data$RSI
   
-  for(i in 1:nrow(x)){
+  for(i in 1:nrow(data)){
     
     if ((Williams[i] >= 0.2) && (Williams[i] >= 0.83)) {
       position[i] <- 1}
     else if ((Williams[i] >= 0.2) && (Williams[i] < 0.83) && (RSI[i] >= 48) && (Williams[i] >= 0.38)) {
       position[i] <- -1} 
-    # else if(Williams[i] >= 0.2 && Williams[i] < 0.83 && RSI[i] >= 38 && Williams[i] < 0.38 && RSI[i] >= 60) {
-    # position[i] <- 1}
-    # else if(Williams[i] >= 0.2 && Williams[i] < 0.83 && RSI[i] >= 48 && Williams[i] < 0.38 && RSI[i] < 60) {
-    # position[i] <- 1}
-    # else if(Williams[i] >= 0.2 && Williams[i] < 0.83 && RSI[i] < 48 && Williams[i] >= 0.62 && RSI[i] >= 35) {
-    # position[i] <- 1}
-    # else if(Williams[i] >= 0.2 && Williams[i] < 0.83 && RSI[i] < 48 && Williams[i] >= 0.62 && RSI[i] < 35) {
-    # position[i] <- 1}
-    # else if(Williams[i] >= 0.2 && Williams[i] < 0.83 && RSI[i] < 48 && Williams[i] < 0.62) {
-    # position[i] <- 1}
-    # else (Williams[i] < 0.2) {
-    # position[i] <- 1}
+    else if(Williams[i] >= 0.2 && Williams[i] < 0.83 && RSI[i] >= 38 && Williams[i] < 0.38 && RSI[i] >= 60) {
+      position[i] <- 1}
+    else if(Williams[i] >= 0.2 && Williams[i] < 0.83 && RSI[i] >= 48 && Williams[i] < 0.38 && RSI[i] < 60) {
+      position[i] <- 1}
+    else if(Williams[i] >= 0.2 && Williams[i] < 0.83 && RSI[i] < 48 && Williams[i] >= 0.62 && RSI[i] >= 35) {
+      position[i] <- 1}
+    else if(Williams[i] >= 0.2 && Williams[i] < 0.83 && RSI[i] < 48 && Williams[i] >= 0.62 && RSI[i] < 35) {
+      position[i] <- 1}
+    else if(Williams[i] >= 0.2 && Williams[i] < 0.83 && RSI[i] < 48 && Williams[i] < 0.62) {
+      position[i] <- 1}
+    else if(Williams[i] < 0.2) {
+     position[i] <- 1}
   }
   return(position)
 }
@@ -37,13 +37,13 @@ data$RSI <- RSI(data$Close, n = 5, matype="WMA")
 
 data <- na.omit(data)
 
-Position <- Strategy(data)
+data$Position <- Strategy(data)
 
-bhReturns <- Delt(myFX$Close, type = "arithmetic")
-myReturns <- bhReturns*Lag(myPosition,1)
+bhReturns <- Delt(data$Close, type = "arithmetic")
+myReturns <- bhReturns*Lag(data$Position,1)
 myReturns[1] <- 0
 
-Complete <- merge(bhReturns, myReturns)
-Complete <- na.omit(Complete)
+complete <- merge(bhReturns, myReturns)
+complete <- na.omit(complete)
 
-plot(cumsum(Complete))
+plot(cumsum(complete))
