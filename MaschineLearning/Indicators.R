@@ -1,5 +1,4 @@
 ##### Calculate Forece Index ###################################################
-##compute the technical indicators
 #Force Index Indicator
 forceindex = (data$Close - data$Open)*data$Vol
 forceindex = c(NA,head(forceindex,-1)) ;
@@ -45,12 +44,42 @@ HC = data$High - data$Close; HC = c(NA, head(HC,-1));
 # Difference between Low and Close
 CL = data$Close - data$Low; CL = c(NA, head(CL, -1));
 
+PercentageBody <- function(Oen,High,Low,Close){
+  divisor <- abs(Close-Open)
+  dividend <- High-Low
+  PercentageBody <- ifelse(dividend > 0, divisor/dividend, 1)
+  return(PercentageBody)
+}
+PercBody = PercentageBody(data$Open, data$High, data$Low, data$Close); PercBody = c(NA,head(PercBody,-1));
+
+UpperWick <- function(Open,High,Low,Close){
+  upper <- ifelse(Open >= Close, Open, Close)
+  UpperWick <- High-upper
+  return(UpperWick)
+}
+UpWick = UpperWick(data$Open,data$High,data$Low,data$Close); UpWick = c(NA,head(UpWick,-1))
+
+DownWick <- function(Open,High,Low,Close){
+  lower <- ifelse(Open <= Close, Open, Close)
+  DownWick <- lower-Low
+  return(DownWick)
+}
+DnWick = DownWick(data$Open,data$High,data$Low,data$Close); DnWick = c(NA,head(DnWick,-1))
+
+RelativeClose <- function(Open,High,Low,Close){
+  divisor <- Close-Low
+  dividend <- High-Low
+  RelativeClose <- ifelse(dividend > 0, divisor/dividend, 1)
+  return(RelativeClose)
+}
+RelClose = RelativeClose(data$Open,data$High,data$Low,data$Close); RelClose = c(NA, head(RelClose,-1))
 ##### Calculate Aroon indicator ################################################
 # Add Aroon indicator
 Aroon = aroon(data$High, n = 5); AroonH = c(NA, head(Aroon[,3],-1));
 Aroon = aroon(data$Low, n = 5); AroonD = c(NA, head(Aroon[,3], -1));
 
-##### Calculate Weekdays indicator #############################################
+##### Calculate Periodic indicator #############################################
 # Weekdays as integer
-Wday = 
+Wday = wday(index(data)); Wday = c(NA, head(Wday,-1));
+Hour = hour(index(data)); Hour = c(NA, head(Hour,-1));
   

@@ -11,6 +11,8 @@
 # install.packages("randomForest")
 # install.packages("randomForestExplainer")
 # install.packages("mlbench")
+# install.packages("lubridate")
+# install.packages(xts)
 
 ##### Install Libraries ########################################################
 library(quantmod)
@@ -29,6 +31,9 @@ library(kernlab)
 library(rpart)
 library(randomForestExplainer)
 library(mlbench)
+library(lubridate)
+library(xts)
+
 
 
 # use set.seed function to ensure the results are repeatable
@@ -37,12 +42,14 @@ set.seed(5)
 ##Read the stock and index data
 data = read.csv("Data/BA_EURUSD_15min.txt")
 
+data$Datetime <- strptime(paste(data$Date, data$Time), "%m/%d/%Y %H:%M")
+data <- as.xts(x = data[,3:7], order.by = data$Datetime)
 ##compute the price change for the stock ans classify as UP/DOWN
 price = data$Close-data$Open
 class = ifelse(price > 0, "UP","DOWN")
 
 ##### Inport all Indicators  ###################################################
-source("Indicators.R")
+source("MaschineLearning/Indicators.R")
 
 ##### Combining all indicators and classes into one dataframe ##################
 dataset = data.frame(class,forceindex,willR2,willR5,willR10,willR15,RSI2,RSI5,RSI10,RSI15,ROC5,ROC10,MOM5,MOM10,ATR2,ATR5,ATR10,HC,CL,AroonH, AroonD)
