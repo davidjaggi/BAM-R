@@ -13,7 +13,7 @@ varImpPlot(fit_rf)
 
 # The most important values are WillR, RSI5 and ROC5d
 # dataset_crop = data.frame(class,willR5,willR10,willR15,RSI2,RSI5,RSI10,RSI15,ROC5,ROC10)
-dataset_crop = data.frame(class,RSI2,PercBody,Hour)
+dataset_crop = data.frame(class,HH5,HH10,HH15,LL5,LL10,LL15)
 dataset_crop = na.omit(dataset_crop)
 
 train <- train_sample(dataset_crop, 0.75)
@@ -24,18 +24,13 @@ correlations = cor(dataset_crop[,c(2:ncol(dataset_crop))])
 print(head(correlations))
 corrplot(correlations, method="number")
 
-dataset_crop = data.frame(class,willR10,RSI5,ROC5)
+dataset_crop = data.frame(class,HH5,HH10,HH15,LL5,LL10,LL15)
 dataset_crop = na.omit(dataset_crop)
-
-
-# visualising the dataset_crop using a correlation matrix
-correlations = cor(dataset_crop[,c(2:ncol(dataset_crop))])
-print(head(correlations))
-corrplot(correlations, method="number")
 
 fit_rfcrop <- randomForest(as.factor(class)~., data = train, replace = TRUE, importance = TRUE)
 fit_rfcrop
 
-getTree(fit_rfcrop)
+plot(fit_rfcrop)
+varUsed(fit_rfcrop)
 importance(fit_rfcrop)
 varImpPlot(fit_rfcrop)

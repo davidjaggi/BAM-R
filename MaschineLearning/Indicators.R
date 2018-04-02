@@ -1,3 +1,5 @@
+source("MaschineLearning/Functions.R")
+
 ##### Calculate Forece Index ###################################################
 #Force Index Indicator
 forceindex = (data$Close - data$Open)*data$Vol
@@ -5,11 +7,10 @@ forceindex = c(NA,head(forceindex,-1)) ;
 
 ##### Calculate Periodic indicator #############################################
 # Weekdays as integer
-Minute = minute(index(data)); minute = c(NA, head(minute,-1));
-hour = hour(index(data)); Hour = c(NA, head(Hour,-1));
+Minute = minute(index(data)); Minute = c(NA, head(Minute,-1));
+Hour = hour(index(data)); Hour = c(NA, head(Hour,-1));
 Wday = wday(index(data)); Wday = c(NA, head(Wday,-1));
 Month = month(index(data)); Month = c(NA, head(Month, -1));
-  
 
 ##### Calculate Bollinger Indicator ############################################
 Bollinger<-BBands(data[,c("High","Low","Close")],n=20,SMA,sd=2)
@@ -33,10 +34,11 @@ ATR10 = ATR(data[,c("High","Low","Close")], n=10, matype="WMA")[,1] ; ATR10 = c(
 #ATRIndexes to be inserted
 
 ##### Calculate Hurst Indicator ##########################################################
-Hurst12 = as.vector(rollapply(return, FUN=HurstK, width=12)); Hurst12 = c(NA,head(Hurst12,-1));
-
+Hurst2 = as.vector(rollapply(return, FUN=HurstK, width=2)); Hurst2 = c(NA,head(Hurst2,-1));
+Hurst5 = as.vector(rollapply(return, FUN=HurstK, width=5)); Hurst5 = c(NA,head(Hurst5,-1));
+Hurst10 = as.vector(rollapply(return, FUN=HurstK, width=10)); Hurst10 = c(NA,head(Hurst10,-1));
 ##### Calculate Momentum Indicator #############################################
-MOM5 = momentum(data$Close, n = 5, na.pad = TRUE) ; MOM5 = c(NA,head(MOM5, -1)) ;
+MOM5 = momentum(data$Close, n = 5, na.pad = TRUE) ; MOM5 = c(NA,head(MOM5, -1));
 MOM10 = momentum(data$Close, n = 10, na.pad = TRUE) ; MOM10 = c(NA,head(MOM10, -1)) ;
 #MomIndexes to be inserted
 ##### Calculate Relative Values ################################################
@@ -49,6 +51,12 @@ PercBody = PercentageBody(data$Open, data$High, data$Low, data$Close); PercBody 
 UpWick = UpperWick(data$Open,data$High,data$Low,data$Close); UpWick = c(NA,head(UpWick,-1))
 DnWick = DownWick(data$Open,data$High,data$Low,data$Close); DnWick = c(NA,head(DnWick,-1))
 RelClose = RelativeClose(data$Open,data$High,data$Low,data$Close); RelClose = c(NA, head(RelClose,-1))
+HH5 = as.vector(ifelse(data$Close > runMax(data$High,5), 1, 0)); HH5 = c(NA,head(HH5,-1));
+HH10 = as.vector(ifelse(data$Close > runMax(data$High,10), 1, 0)); HH10 = c(NA,head(HH10,-1));
+HH15 = as.vector(ifelse(data$Close > runMax(data$High,15), 1, 0)); HH15 = c(NA,head(HH15,-1));
+LL5 = as.vector(ifelse(data$Close < runMin(data$Low,5), 1, 0)); LL5 = c(NA,head(LL5,-1));
+LL10 = as.vector(ifelse(data$Close < runMin(data$Low,10), 1, 0)); LL10 = c(NA,head(LL10,-1));
+LL15 = as.vector(ifelse(data$Close < runMin(data$Low,15), 1, 0)); LL15 = c(NA,head(LL15,-1));
 ##### Calculate ROC Indocator ##################################################
 #Price xhange indicators
 ROC5 = ROC(data$Close, n = 5, type = "discrete")*100 ; ROC5 = c(NA,head(ROC5,-1)) ;
