@@ -1,1 +1,0 @@
-header <- dashboardHeader(title = "BAM")
