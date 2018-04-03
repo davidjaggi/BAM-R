@@ -25,14 +25,14 @@ SignalLagger <- function(Dataset, Lags = 1){
   return(LaggedData)
 }
 
-train_sample <- function(data, percentage){
+TrainSample <- function(data, percentage){
   smp_size <- floor(percentage * nrow(data))
   train_ind <- sample(seq_len(nrow(data)), size = smp_size)
   train <- data[train_ind, ]
   return(data)
 }
 
-test_sample <- function(data, percentage){
+TestSample <- function(data, percentage){
   smp_size <- floor(percentage * nrow(data))
   train_ind <- sample(seq_len(nrow(data)), size = smp_size)
   test <- data[-train_ind, ]

@@ -94,5 +94,5 @@ corrplot(correlations, method="number")
 pairs(dataset[1:500,])
 
 ##### Split data into train and test ###########################################
-train <- train_sample(dataset, 0.75)
-test <- test_sample(dataset, 0.75)
+train <- TrainSample(dataset, 0.75)
+test <- TestSample(dataset, 0.75)
