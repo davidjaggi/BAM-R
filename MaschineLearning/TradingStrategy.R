@@ -3,45 +3,42 @@ library(PerformanceAnalytics)
 
 Strategy <- function(data) {
   position <- rep(0,nrow(data))
-  Williams <- data$Williams
-  RSI <- data$RSI
-  
+  DayOfMonth <- data$DayOfMonth
+  Hour <- data$Hour
+
   for(i in 1:nrow(data)){
     
-    if ((Williams[i] >= 0.2) && (Williams[i] >= 0.83)) {
-      position[i] <- 1}
-    else if ((Williams[i] >= 0.2) && (Williams[i] < 0.83) && (RSI[i] >= 48) && (Williams[i] >= 0.38)) {
-      position[i] <- -1} 
-    else if(Williams[i] >= 0.2 && Williams[i] < 0.83 && RSI[i] >= 38 && Williams[i] < 0.38 && RSI[i] >= 60) {
-      position[i] <- -1}
-    else if(Williams[i] >= 0.2 && Williams[i] < 0.83 && RSI[i] >= 48 && Williams[i] < 0.38 && RSI[i] < 60) {
-      position[i] <- -1}
-    else if(Williams[i] >= 0.2 && Williams[i] < 0.83 && RSI[i] < 48 && Williams[i] >= 0.62 && RSI[i] >= 35) {
-      position[i] <- 1}
-    else if(Williams[i] >= 0.2 && Williams[i] < 0.83 && RSI[i] < 48 && Williams[i] >= 0.62 && RSI[i] < 35) {
-      position[i] <- -1}
-    else if(Williams[i] >= 0.2 && Williams[i] < 0.83 && RSI[i] < 48 && Williams[i] < 0.62) {
-      position[i] <- 1}
-    else if(Williams[i] < 0.2) {
-     position[i] <- 1}
+    # if ((Williams[i] >= 0.2) && (Williams[i] >= 0.83)) {
+    #   position[i] <- 1}
+    # else if ((Williams[i] >= 0.2) && (Williams[i] < 0.83) && (RSI[i] >= 48) && (Williams[i] >= 0.38)) {
+    #   position[i] <- -1} 
+    # else if(Williams[i] >= 0.2 && Williams[i] < 0.83 && RSI[i] >= 38 && Williams[i] < 0.38 && RSI[i] >= 60) {
+    #   position[i] <- -1}
+    # else if(Williams[i] >= 0.2 && Williams[i] < 0.83 && RSI[i] >= 48 && Williams[i] < 0.38 && RSI[i] < 60) {
+    #   position[i] <- -1}
+    # else if(Williams[i] >= 0.2 && Williams[i] < 0.83 && RSI[i] < 48 && Williams[i] >= 0.62 && RSI[i] >= 35) {
+    #   position[i] <- 1}
+    # else if(Williams[i] >= 0.2 && Williams[i] < 0.83 && RSI[i] < 48 && Williams[i] >= 0.62 && RSI[i] < 35) {
+    #   position[i] <- -1}
+    # else if(Williams[i] >= 0.2 && Williams[i] < 0.83 && RSI[i] < 48 && Williams[i] < 0.62) {
+    #   position[i] <- 1}
+    # else if(Williams[i] < 0.2) {
+    #  position[i] <- 1}
+    ifelse(DayOfMonth[i] <= 10, ifelse((Hour >= 12) && (Hour <= 19), position[i] <- -1, position[i] <- 0),position[i] <- 0)
   }
   return(position)
 }
 
 # Make price series an xts
-
-data$Williams <- WPR(data[,c("High","Low","Close")], n=10)
-data$RSI <- RSI(data$Close, n = 5, matype="WMA")
-
-data <- na.omit(data)
+data$DayOfMonth <- DayOfMonth
+data$Hour <- Hour
 
 data$Position <- Strategy(data)
 
-bhReturns <- Delt(data$Close, type = "arithmetic")
-myReturns <- bhReturns*Lag(data$Position,1)
+myReturns <- return*Lag(data$Position,1)
 myReturns[1] <- 0
 
-complete <- merge(bhReturns, myReturns)
+complete <- merge(return, myReturns)
 complete <- na.omit(complete)
 
 plot(cumsum(complete))

@@ -6,33 +6,28 @@ DataLoader <- function(path, start, end){
   return(data)
 }
 
-SignalLagger <- function(Dataset, Lags = 1){
+SignalLagger <- function(Dataset, Lags = 1, Normal = TRUE){
   Dataset <- Dataset
-  LaggedData <- Dataset
-  if (length(Lags) == 1){
-    Lags <- c(0,rep(Lags, ncol(Dataset)-1))
-  } else {
-    Lags <- c(0,Lags)
+  Signal <- Dataset[,1]
+  Lagged <- Dataset[,(2:ncol(Dataset))]
+  if (length(Lags) != 1){
+    Lagged <- lead()
+  } else{
+  Lagged <- as.data.frame(c(NA, head(,-Lags)))
   }
-
-  for(i in 1:length(Lags)){
-    LaggedData[,i] <- shift(x = LaggedData[,i], 
-                          n = Lags[i], 
-                          fill = NA, 
-                          type = "lead")
-  }
+  LaggedData <- as.data.frame(cbind(Signal, Lagged))
   LaggedData <- na.omit(LaggedData)
   return(LaggedData)
 }
 
-TrainSample <- function(data, percentage){
+train_sample <- function(data, percentage){
   smp_size <- floor(percentage * nrow(data))
   train_ind <- sample(seq_len(nrow(data)), size = smp_size)
   train <- data[train_ind, ]
   return(data)
 }
 
-TestSample <- function(data, percentage){
+test_sample <- function(data, percentage){
   smp_size <- floor(percentage * nrow(data))
   train_ind <- sample(seq_len(nrow(data)), size = smp_size)
   test <- data[-train_ind, ]

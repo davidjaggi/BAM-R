@@ -16,9 +16,9 @@
 # install.packages("FGN")
 # install.packages("candlesticks", repos="http://R-Forge.R-project.org")
 # install_github("IlyaKipnis/DSTrading")
-# install.packages("dplyr")
-# install.packages("tdyr")
-# install.packages("data.table")
+# install.packages("tidyr")
+install.packages("dplyr")
+
 
 ##### Install Libraries ########################################################
 library(quantmod)
@@ -41,9 +41,8 @@ library(lubridate)
 library(xts)
 library(FGN)
 library(candlesticks)
-library(dplyr)
 library(tidyr)
-library(data.table)
+library(dplyr)
 source("MaschineLearning/Functions.R")
 ##### Input your settings here #################################################
 # use set.seed function to ensure the results are repeatable
@@ -74,7 +73,8 @@ source("MaschineLearning/Indicators.R")
 
 # dataset = data.frame(class,forceindex,willR2,willR5,willR10,willR15,RSI2,RSI5,RSI10,RSI15,ROC5,ROC10,MOM5,MOM10,ATR2,ATR5,ATR10,HC,CL,AroonH, AroonD)
 dataset <- data.frame(class, MOM5, MOM10)
-dataset <- SignalLagger(Dataset = dataset, Lags = 1)
+dataset <- SignalLagger(dataset, 1, TRUE)
+dataset = na.omit(dataset)
 
 ##understanding the dataset using descriptive statistics
 head(dataset)
@@ -94,5 +94,5 @@ corrplot(correlations, method="number")
 pairs(dataset[1:500,])
 
 ##### Split data into train and test ###########################################
-train <- TrainSample(dataset, 0.75)
-test <- TestSample(dataset, 0.75)
+train <- train_sample(dataset, 0.75)
+test <- test_sample(dataset, 0.75)

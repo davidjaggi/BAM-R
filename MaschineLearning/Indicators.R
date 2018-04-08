@@ -10,6 +10,7 @@ Minute = minute(index(data))
 Hour = hour(index(data))
 Wday = wday(index(data))
 Month = month(index(data))
+DayOfMonth = mday(index(data))
 
 ##### Calculate Bollinger Indicator ############################################
 Bollinger<-BBands(data[,c("High","Low","Close")],n=20,SMA,sd=2)
