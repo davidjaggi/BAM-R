@@ -17,7 +17,8 @@
 # install.packages("candlesticks", repos="http://R-Forge.R-project.org")
 # install_github("IlyaKipnis/DSTrading")
 # install.packages("tidyr")
-install.packages("dplyr")
+# install.packages("dplyr")
+# install.packages("data.table")
 
 
 ##### Install Libraries ########################################################
@@ -43,29 +44,19 @@ library(FGN)
 library(candlesticks)
 library(tidyr)
 library(dplyr)
+library(data.table)
 source("MaschineLearning/Functions.R")
 ##### Input your settings here #################################################
 # use set.seed function to ensure the results are repeatable
 set.seed(5)
 
 # Set the date for the timeseries
-start = "2012-01-01"
+start = "2016-01-01"
 end = as.character(today())
 path = "Data/BA_EURUSD_60min.txt"
 # path = "Data/BA_EURUSD_15min.txt"
 
 data <- DataLoader(path, start, end)
-##compute the price change for the stock ans classify as UP/DOWN
-price = as.vector(data$Close-data$Open)
-class = as.vector(ifelse(price > 0, "UP","DOWN"))
-return = Delt(data$Close, k=1)
-return2 = SumReturns(data = return, n = 2)
-return4 = SumReturns(data = return, n = 4)
-return8 = SumReturns(data = return, n = 8)
-return12 = SumReturns(data = return, n = 12)
-return16 = SumReturns(data = return, n = 16)
-return20 = SumReturns(data = return, n = 20)
-return24 = SumReturns(data = return, n = 24)
 
 ##### Import all Indicators  ###################################################
 source("MaschineLearning/Indicators.R")

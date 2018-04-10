@@ -3,8 +3,7 @@ library(PerformanceAnalytics)
 
 Strategy <- function(data) {
   position <- rep(0,nrow(data))
-  DayOfMonth <- data$DayOfMonth
-  Hour <- data$Hour
+  RelClose <- RelClose
 
   for(i in 1:nrow(data)){
     
@@ -24,14 +23,14 @@ Strategy <- function(data) {
     #   position[i] <- 1}
     # else if(Williams[i] < 0.2) {
     #  position[i] <- 1}
-    ifelse(DayOfMonth[i] <= 10, ifelse((Hour >= 12) && (Hour <= 19), position[i] <- -1, position[i] <- 0),position[i] <- 0)
+    ifelse(RelClose[i] >= 0.9, position[i] <- -1, ifelse(RelClose[i] <= 0.1, position[i] <- 1, position[i] <- 0))
   }
   return(position)
 }
 
 # Make price series an xts
-data$DayOfMonth <- DayOfMonth
-data$Hour <- Hour
+data$RelClose <- RelClose
+
 
 data$Position <- Strategy(data)
 
