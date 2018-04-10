@@ -63,9 +63,9 @@ source("MaschineLearning/Indicators.R")
 ##### Combining all indicators and classes into one dataframe ##################
 
 # dataset = data.frame(class,forceindex,willR2,willR5,willR10,willR15,RSI2,RSI5,RSI10,RSI15,ROC5,ROC10,MOM5,MOM10,ATR2,ATR5,ATR10,HC,CL,AroonH, AroonD)
+dataset <- data.frame(return, RSI2, MOM5, RelClose)
 dataset <- data.frame(class, MOM5, MOM10)
-dataset <- SignalLagger(dataset, 1, TRUE)
-dataset = na.omit(dataset)
+dataset <- SignalLagger(dataset, 1)
 
 ##understanding the dataset using descriptive statistics
 head(dataset)

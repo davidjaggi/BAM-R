@@ -13,7 +13,7 @@ SignalLagger <- function(Dataset, Lags = 1, Normal = TRUE){
   if (length(Lags) != 1){
     Lagged <- lead()
   } else{
-  Lagged <- as.data.frame(c(NA, head(,-Lags)))
+  Lagged <- as.data.frame(c(NA, head(Lagged,-Lags)))
   }
   LaggedData <- as.data.frame(cbind(Signal, Lagged))
   LaggedData <- na.omit(LaggedData)
